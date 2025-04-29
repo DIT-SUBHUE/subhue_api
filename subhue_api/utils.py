@@ -13,24 +13,22 @@ def obter_e_filtrar_unidades(
 ) -> Tuple[pd.DataFrame, pd.DataFrame]:
     """
     Obtém dados de unidades a partir da API e os filtra com base nos critérios especificados.
-
-    Args:
-        url (str): URL da API para obter os dados.
-        filtros (Dict[str, List[str]]): Dicionário com os critérios de filtragem.
-
-    Returns:
-        Tuple[pd.DataFrame, pd.DataFrame]: Uma tupla contendo dois DataFrames, o primeiro com as unidades hospitalares
-        e o segundo com as unidades de emergência. Retorna (None, None) em caso de erro.
     """
+    logging.info("Iniciando obter_e_filtrar_unidades")
+    logging.debug(f"Parâmetros recebidos em filtros: {filtros}")
+
     df = obter_unidades_da_api()
     if df is None:
+        logging.info("Não foi possível obter dados da API.")
         return None, None
 
     try:
+        logging.debug("Preenchendo coluna 'cnes' com zeros à esquerda.")
         df["cnes"] = df["cnes"].str.zfill(7)
     except Exception as e:
         logging.error(f"Erro ao preencher CNES com zeros à esquerda: {e}")
 
+    logging.info("Chamando filtrar_unidades")
     return filtrar_unidades(df, filtros)
 
 
@@ -39,15 +37,11 @@ def filtrar_unidades(
 ) -> Tuple[pd.DataFrame, pd.DataFrame]:
     """
     Filtra unidades com base nos critérios especificados.
-
-    Args:
-        df (pd.DataFrame): DataFrame contendo as unidades.
-        filtros (Dict[str, List[str]]): Dicionário com os critérios de filtragem.
-
-    Returns:
-        Tuple[pd.DataFrame, pd.DataFrame]: Uma tupla contendo dois DataFrames, o primeiro com as unidades hospitalares
-        e o segundo com as unidades de emergência.
     """
+    logging.info("Iniciando filtrar_unidades")
+    logging.debug(f"Shape do DataFrame recebido: {df.shape}")
+    logging.debug(f"Filtros recebidos: {filtros}")
+
     try:
         # Filtros para unidades hospitalares
         cond_tipo_hospitalar = df["tipo_unidade"].isin(filtros["tipos_hospitalares"])
@@ -56,6 +50,7 @@ def filtrar_unidades(
         df_hospitalar = df[
             (cond_tipo_hospitalar & cond_cnes2_hospitalar) | cond_cnes_hospitalar
         ].copy()
+        logging.debug(f"Unidades hospitalares filtradas: {df_hospitalar.shape}")
 
         # Filtros para unidades de emergência
         cond_tipo_emergencia = ~df["tipo_unidade"].isin(
@@ -66,6 +61,7 @@ def filtrar_unidades(
         df_emergencia = df[
             (cond_tipo_emergencia & cond_cnes_emergencia) | cond_cnes2_emergencia
         ].copy()
+        logging.debug(f"Unidades de emergência filtradas: {df_emergencia.shape}")
 
         return df_hospitalar, df_emergencia
     except Exception as e:
@@ -76,19 +72,14 @@ def filtrar_unidades(
 def obter_unidades_da_api(timeout: int = 25) -> Optional[pd.DataFrame]:
     """
     Obtém unidades de uma API e os converte em um DataFrame do Pandas.
-
-    Args:
-        url (str): URL da API para obter os dados.
-        timeout (int): Tempo máximo de espera para a requisição.
-
-    Returns:
-        Optional[pd.DataFrame]: DataFrame com os dados obtidos, ou None em caso de erro.
     """
     logging.info(f"Iniciando requisição para {URL}")
+    logging.debug(f"Timeout configurado: {timeout}")
 
     try:
         response = requests.get(URL, timeout=timeout)
         response.raise_for_status()
+        logging.info("Requisição bem-sucedida.")
     except requests.exceptions.Timeout as te:
         logging.error(f"Timeout na requisição para {URL}: {te}")
         return None
@@ -99,7 +90,9 @@ def obter_unidades_da_api(timeout: int = 25) -> Optional[pd.DataFrame]:
     try:
         dados = response.json()
         logging.debug(f"Dados obtidos: {dados}")
-        return pd.DataFrame(dados)
+        df = pd.DataFrame(dados)
+        logging.debug(f"DataFrame criado com shape: {df.shape}")
+        return df
     except Exception as e:
         logging.error(f"Erro ao processar dados da API: {e}")
         return None
