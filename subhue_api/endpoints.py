@@ -24,6 +24,14 @@ class SubhueEndpoints:
     registrados: str
     internacoes: str
 
+    # smsrio
+    mapa_leitos: str
+    macroindicadores_geral: str
+    macroindicadores_pediatrico: str
+    macroindicadores_maternidade: str
+    casos_sociais: str
+    longa_permanencia: str
+
     @classmethod
     def from_base_url(cls, base_url: str) -> "SubhueEndpoints":
         """Create endpoints from a base URL."""
@@ -40,6 +48,13 @@ class SubhueEndpoints:
             classificados=f"{base_url}/vitai/classificados/",
             registrados=f"{base_url}/vitai/registrados/",
             internacoes=f"{base_url}/vitai/internacoes/",
+            # smrrio
+            mapa_leitos=f"{base_url}/mapa/leitos/",
+            macroindicadores_geral=f"{base_url}/macroindicadores/geral/",
+            macroindicadores_pediatrico=f"{base_url}/macroindicadores/pediatrico/",
+            macroindicadores_maternidade=f"{base_url}/macroindicadores/maternidade/",
+            casos_sociais=f"{base_url}/smsrio/casos-sociais/",
+            longa_permanencia=f"{base_url}/smsrio/longa-permanencia/",
         )
 
 
