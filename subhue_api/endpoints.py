@@ -59,7 +59,7 @@ class SubhueEndpoints:
 
 
 # Production endpoints
-PROD_ENDPOINTS = SubhueEndpoints.from_base_url("https://api.subhue.org")
+PROD_ENDPOINTS = SubhueEndpoints.from_base_url("https://backend-dev.subhue.org")
 
 # Development endpoints
 DEV_ENDPOINTS = SubhueEndpoints.from_base_url("https://api-dev.subhue.org")
