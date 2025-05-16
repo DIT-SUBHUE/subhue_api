@@ -23,6 +23,7 @@ class SubhueEndpoints:
     classificados: str
     registrados: str
     internacoes: str
+    ipsa: str
 
     # smsrio
     mapa_leitos: str
@@ -48,6 +49,7 @@ class SubhueEndpoints:
             classificados=f"{base_url}/vitai/classificados/",
             registrados=f"{base_url}/vitai/registrados/",
             internacoes=f"{base_url}/vitai/internacoes/",
+            ipsa=f"{base_url}/vitai/internacoes-por-setor-analitico/",
             # smrrio
             mapa_leitos=f"{base_url}/mapa/leitos/",
             macroindicadores_geral=f"{base_url}/macroindicadores/geral/",
